@@ -1,0 +1,113 @@
+﻿@page "/editview/{id:guid}"
+@using CMS.Data
+@using Microsoft.EntityFrameworkCore
+@inject Microsoft.EntityFrameworkCore.IDbContextFactory<personContext> pcontext
+@inject NavigationManager Navigate
+@inject IJSRuntime JsRuntime
+
+<h3>Edit a Contact</h3>
+<br />
+<br />
+
+<div class="row">
+    <EditForm Model="@people" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group">
+            <label style="position: center">Last Name</label>
+            <InputText @bind-Value="people.lastName" style="width:300px;" />
+            <ValidationMessage For="() => people.lastName" />
+        </div>
+
+        <div class="form-group">
+            <label style="position: center">First Name</label>
+            <InputText @bind-Value="people.firstName" style="width:300px;" />
+            <ValidationMessage For="() => people.firstName" />
+        </div>
+
+        <div class="form-group">
+            <label>Birth Date</label>
+            <InputDate @bind-Value="people.birthDate" />
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <InputText @bind-Value="people.phoneNum" style="width:300px;" />
+        </div>
+        <br />
+        <div class="form-group">
+            <input type="submit" class="btn btn-success" value="Save" />
+            <NavLink href="" class="btn btn-info">Cancel</NavLink>
+            <input type="button" class="btn btn-danger" value="Delete" @onclick="() => showMod()" />
+        </div>
+    </EditForm>
+   
+</div>
+
+    @if (showModal)
+    {
+        <div class="modal-backdrop" style="display:block" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content" style="margin: 2px auto; z-index: 1100;">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete</h4>
+                        <button type="button" class="close" @onclick="@hideMod">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this contact?</p>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" style="left: 1%;" @onclick=@DeleteContact>Delete</button>
+                        <button type="button" class="btn btn-info" style="left: 1%;" @onclick="@hideMod">No</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+
+@code {
+        bool showModal = false;
+    private person people = new person();
+    [Parameter] public Guid id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using (var conn = pcontext.CreateDbContext())
+        {
+            people = await conn.contacts.FirstOrDefaultAsync(f => f.id == id);
+        }
+    }
+
+    private async Task Save()
+    {
+        using (var conn = pcontext.CreateDbContext())
+        {
+            conn.contacts.Update(people);
+            await conn.SaveChangesAsync();
+            Navigate.NavigateTo("/");
+        }
+    }
+
+    void showMod() => showModal = true;
+    void hideMod() => showModal = false;
+
+    private async Task DeleteContact()
+    {
+
+        using (var conn = pcontext.CreateDbContext())
+        {
+            conn.contacts.Remove(people);
+            await conn.SaveChangesAsync();
+            showModal = false;
+            Navigate.NavigateTo("/");
+        }
+
+    }
+}

@@ -1,0 +1,129 @@
+﻿@page "/"
+
+@using CMS.Data
+@using System.Net
+@inject Microsoft.EntityFrameworkCore.IDbContextFactory<personContext> pcontext
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+<h2>Contacts</h2>
+<br />
+<input type="button" class="btn btn-primary" style="left: 80%; width: 250px; position: sticky" value="Add Contact" @onclick="() => AddContact()" />
+
+<br />
+<br />
+@if (people == null)
+{
+    <p><em>No contacts added yet</em></p>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th class="sort" @onclick="@(()=>sort("lastName"))">Last Name  <span class="oi @(setIcon("lastName"))"></span></th>
+                <th class = "sort" @onclick="@(()=>sort("firstName"))">First Name  <span class="oi @(setIcon("firstName"))"></span></th>
+                <th class= "sort" @onclick="@(()=>sort("birthDate"))">Birth Date  <span class="oi @(setIcon("birthDate"))"></span></th>
+                <th>Phone Number</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in people)
+            {
+                <tr>
+                    <td>@x.lastName</td>
+                    <td>@x.firstName</td>
+                    <td>@x.birthDate.ToString("MM/dd/yyyy")</td>
+                    <td>@x.phoneNum</td>
+                    <td>
+                        <a href="" @onclick="() => viewContact(x.id)" @onclick:preventDefault>Edit/View</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<br />
+<div>
+    
+    @for (int x = 0; x < tPages; x++)
+    {
+        var pnum = x;
+        <button class="btn btn-primary" @onclick="@(i => updateTable(pnum))">@(x + 1)</button>
+    }
+</div>
+
+@code {
+    private person[] people;
+    private person[] AllPeople;
+    private int pSize = 10;
+    private int tPages;
+    protected override async Task OnInitializedAsync()
+    {
+        using personContext perContext = pcontext.CreateDbContext();
+
+        AllPeople = await perContext.contacts.ToArrayAsync();
+        people = AllPeople.Take(pSize).ToArray();
+        tPages = (int)Math.Ceiling(AllPeople.Count() / (decimal)pSize);
+        base.OnInitialized();
+    }
+
+    private void AddContact()
+    {
+        Navigation.NavigateTo("/addcontact");
+    }
+
+    private void viewContact(Guid id)
+    {
+        Navigation.NavigateTo("/editview/" + id);
+    }
+
+
+    private string currentSort;
+    private bool toggleSort;
+
+    private void sort(string cName)
+    {
+        if (cName == currentSort)
+        {
+            if (toggleSort)
+            {
+                AllPeople = AllPeople.OrderByDescending(x => x.GetType().GetProperty(cName).GetValue(x, null)).ToArray();
+            }
+            else
+            {
+                AllPeople = AllPeople.OrderBy(x => x.GetType().GetProperty(cName).GetValue(x, null)).ToArray();
+            }
+            toggleSort = !toggleSort;
+        }
+        else
+        {
+            AllPeople = AllPeople.OrderBy(x => x.GetType().GetProperty(cName).GetValue(x, null)).ToArray();
+            currentSort = cName;
+            toggleSort = true;
+        }
+        people = AllPeople.Take(pSize).ToArray();
+    }
+    private void updateTable(int pNum)
+    {
+        people = AllPeople.Skip(pNum * pSize).Take(pSize).ToArray();
+    }
+
+    private string setIcon(string cName)
+    {
+        if (currentSort != cName)
+        {
+            return string.Empty;
+        }
+        if (toggleSort)
+        {
+            return "oi-caret-top";
+        }
+        else
+        {
+            return "oi-caret-bottom";
+        }
+    }
+}
+
+    

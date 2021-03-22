@@ -1,0 +1,64 @@
+﻿@page "/addcontact"
+@using CMS.Data
+@using Microsoft.EntityFrameworkCore
+@inject Microsoft.EntityFrameworkCore.IDbContextFactory<personContext> pcontext
+@inject NavigationManager Navigate
+
+<h3>Add a Contact</h3>
+<br />
+<br />
+
+<div class="row">
+    <EditForm Model="@people" OnValidSubmit="Add">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group">
+            <label style="position: center">Last Name*</label>
+            <InputText @bind-Value="people.lastName" style="width:300px;" />
+            <ValidationMessage For="() => people.lastName" />
+        </div>
+
+        <div class="form-group">
+            <label style="position: center">First Name</label>
+            <InputText @bind-Value="people.firstName" style="width:300px;" />
+            <ValidationMessage For="() => people.firstName" />
+        </div>
+
+        <div class="form-group">
+            <label>Birth Date</label>
+            <InputDate @bind-Value="people.birthDate" Format="MM/dd/yyyy"/>
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <InputText @bind-Value="people.phoneNum" style="width:300px;" />
+        </div>
+        <br />
+        <div class="form-group">
+            <input type="submit" class="btn btn-success" value="Save" />
+            <NavLink href="" class="btn btn-info">Cancel</NavLink>
+        </div>
+    </EditForm>
+
+</div>
+
+
+@code {
+    private person people = new person();
+
+    protected override async Task OnInitializedAsync()
+    {
+        people.birthDate = DateTime.Today;
+    }
+
+    private async Task Add()
+    {
+        using (var conn = pcontext.CreateDbContext())
+        {
+            conn.contacts.Add(people);
+            await conn.SaveChangesAsync();
+            Navigate.NavigateTo("/");
+        }
+    }
+
+}
