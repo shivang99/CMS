@@ -4,6 +4,7 @@
 @inject Microsoft.EntityFrameworkCore.IDbContextFactory<personContext> pcontext
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
+
 <h2>Contacts</h2>
 <br />
 <input type="button" class="btn btn-primary" style="left: 80%; width: 250px; position: sticky" value="Add Contact" @onclick="() => AddContact()" />
@@ -54,8 +55,8 @@ else
 @code {
     private person[] people;
     private person[] AllPeople;
-    
-    private int pSize = 10;
+
+    private int pSize = 5;
     private int tPages;
     protected override async Task OnInitializedAsync()
     {
@@ -124,9 +125,8 @@ else
         {
             return "oi-caret-bottom";
         }
-    }
+    }   
 
-    
 }
 
-    
+

@@ -56,6 +56,14 @@
     {
         using (var conn = pcontext.CreateDbContext())
         {
+            people.firstName = people.firstName.Trim();
+            people.lastName = people.lastName.Trim();
+            if (people.phoneNum != null)
+            {
+                people.phoneNum = new string((from x in people.phoneNum
+                                              where char.IsLetterOrDigit(x)
+                                              select x).ToArray());
+            }
             conn.contacts.Add(people);
             await conn.SaveChangesAsync();
             Navigate.NavigateTo("/");
