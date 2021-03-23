@@ -1,5 +1,4 @@
 ﻿@page "/"
-
 @using CMS.Data
 @using System.Net
 @inject Microsoft.EntityFrameworkCore.IDbContextFactory<personContext> pcontext
@@ -8,7 +7,6 @@
 <h2>Contacts</h2>
 <br />
 <input type="button" class="btn btn-primary" style="left: 80%; width: 250px; position: sticky" value="Add Contact" @onclick="() => AddContact()" />
-
 <br />
 <br />
 @if (people == null)
@@ -56,6 +54,7 @@ else
 @code {
     private person[] people;
     private person[] AllPeople;
+    
     private int pSize = 10;
     private int tPages;
     protected override async Task OnInitializedAsync()
@@ -102,8 +101,10 @@ else
             currentSort = cName;
             toggleSort = true;
         }
+
         people = AllPeople.Take(pSize).ToArray();
     }
+
     private void updateTable(int pNum)
     {
         people = AllPeople.Skip(pNum * pSize).Take(pSize).ToArray();
@@ -124,6 +125,8 @@ else
             return "oi-caret-bottom";
         }
     }
+
+    
 }
 
     

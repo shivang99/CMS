@@ -11,22 +11,22 @@
 <div class="row">
     <EditForm Model="@people" OnValidSubmit="Add">
         <DataAnnotationsValidator />
-        <ValidationSummary />
+
         <div class="form-group">
-            <label style="position: center">Last Name*</label>
+            <label style="position: center">Last Name   <span style="color: red">*</span></label>
             <InputText @bind-Value="people.lastName" style="width:300px;" />
             <ValidationMessage For="() => people.lastName" />
         </div>
 
         <div class="form-group">
-            <label style="position: center">First Name</label>
+            <label style="position: center">First Name   <span style="color: red">*</span></label>
             <InputText @bind-Value="people.firstName" style="width:300px;" />
             <ValidationMessage For="() => people.firstName" />
         </div>
 
         <div class="form-group">
             <label>Birth Date</label>
-            <InputDate @bind-Value="people.birthDate" Format="MM/dd/yyyy"/>
+            <InputDate @bind-Value="people.birthDate" Format="MM/dd/yyyy" />
         </div>
 
         <div class="form-group">
@@ -38,6 +38,7 @@
             <input type="submit" class="btn btn-success" value="Save" />
             <NavLink href="" class="btn btn-info">Cancel</NavLink>
         </div>
+        <ValidationSummary />
     </EditForm>
 
 </div>

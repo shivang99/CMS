@@ -140,14 +140,14 @@ label {
     top: 70%;
     position: relative;
 }
-.fa {
-    float: right;
-}
 .btn-info {
     left: 26%;
     margin-left: -104.5px;
     top: 70%;
     position: relative;
+}
+.oi{
+    float: right;
 }
 .btn-danger {
     left: 21%;
